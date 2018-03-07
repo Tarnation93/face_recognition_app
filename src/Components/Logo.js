@@ -1,11 +1,12 @@
 import React from 'react' ;
 import Tilt from 'react-tilt';
-
+import './Logo.css'
+import Krang from './krang.png'
 const Logo = () => {
 	return(
-		<div className = 'tr ma4 mt0'>
-			<Tilt className="Tilt" options={{ max : 25 }} style={{ height: 250, width: 250 }} >
- 				<div className="Tilt-inner"> 👽 </div>
+		<div className = 'tarot '>
+			<Tilt className="Tilt br4 shadow-2" options={{ max : 50 }} style={{ height: 150, width: 150 }} >
+ 				<div className="Tilt-inner"><img style={{paddingTop: '10px'}} alt="srederu" src={Krang}/> </div>
 			</Tilt>
 		</div>
 	)
