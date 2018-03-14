@@ -11,24 +11,42 @@ import particlesOptions from './Components/particlesOptions' ;
 import SignInForm from './Components/SignInForm'
 import Register from './Components/Register'
 
-
+const initialState = {
+      input : '',
+      imageurl : '', 
+      box : {} ,
+      route: 'SignIn',
+      isSignedIn: false,
+      
+      user:{
+          id: '',
+         name: '',
+         email: '',
+         entries: " ",
+         joined: " ",
+        }
+      }
 
   
 const app = new Clarifai.App({
- apiKey: 'aabda0a6836d4cc29fc4bd112515e845'
+ apiKey: 'f030ba687e9c42d6baec8d7d3a12dda9'
 });
 
 class App extends Component {
   constructor()
   {
     super();
-    this.state = {
-      input : '',
-      imageurl : '', 
-      box : {} ,
-      route: 'SignIn',
-      isSignedIn: false,
+    this.state = initialState
     }
+  
+  loadUser = (data) => {
+    this.setState({user:{
+          id: data.id,
+         name: data.name,
+         email: data.email,
+        entries: data.entries,
+         joined: data.joined
+    }})
   }
 
   faceLocation = (data) => {
@@ -45,8 +63,8 @@ class App extends Component {
   }
 OnRouteChange = (route) => {
     if (route === 'signout'){
-      this.setState({isSignedIn: false})
-  		this.setState({route:'SignIn'})}
+      
+  		this.setState(initialState)}
     else if (route === 'home') {
       this.setState({isSignedIn: true})
     }
@@ -64,11 +82,35 @@ OnRouteChange = (route) => {
   }
   OnClickChange = () =>
   {
-    this.setState({imageurl: this.state.input});
+    this.setState({imageurl: this.state.input})   ;
     app.models
     .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)		
-    .then (response => this.faceBox(this.faceLocation(response)))
-    .catch (err => console.log(err))
+    .then (response => {
+      if (response) {
+    
+      fetch('https://cryptic-springs-95105.herokuapp.com/image',{
+        'method':'put',
+        "headers":{'Content-Type': 'application/json'},
+        "body": JSON.stringify({
+         id: this.state.user.id
+       })
+      
+  
+      
+    })
+    .then (response=>response.json()
+    .then(count=> {
+      this.setState(Object.assign(this.state.user, {entries:count}))
+      //vratiti se :D
+        
+      
+    })
+      )
+  }
+     this.faceBox(this.faceLocation(response))
+})
+
+    .catch (err => console.log(err,''))
   }
 
   render() {
@@ -81,15 +123,15 @@ OnRouteChange = (route) => {
         />
           <Navigation isSignedIn = {isSignedIn} OnRouteChange = {this.OnRouteChange}/>
 
-          {this.state.route === 'SignIn'?
-           <SignInForm OnRouteChange = {this.OnRouteChange}/>
+          {route === 'SignIn'?
+           <SignInForm loadUser = {this.loadUser} OnRouteChange = {this.OnRouteChange}/>
      : route === 'register' ?
-     <Register OnRouteChange = {this.OnRouteChange}/>
+     <Register loadUser = {this.loadUser} OnRouteChange = {this.OnRouteChange}/>
      :route === 'signout' ?
-     <SignInForm OnRouteChange = {this.OnRouteChange}/>
+     <SignInForm loadUser = {this.loadUser} OnRouteChange = {this.OnRouteChange}/>
          :<div>
   	         <Logo/>
-	        <Ranks/>
+	         <Ranks name = {this.state.user.name} entries= {this.state.user.entries}/> 
 	        <ImageLinkForm 
 	          OnClickChange = {this.OnClickChange} 
 	          OnInputChange = {this.OnInputChange} 

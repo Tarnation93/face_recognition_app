@@ -39,7 +39,7 @@ const particlesOptions = () => {
       }
     },
     "size": {
-      "value": 5,
+      "value": 3.5,
       "random": true,
       "anim": {
         "enable": false,
@@ -53,7 +53,7 @@ const particlesOptions = () => {
       "distance": 300,
       "color": "#111111",
       "opacity": 0.4,
-      "width": 2
+      "width": 1.4
     },
     "move": {
       "enable": true,
